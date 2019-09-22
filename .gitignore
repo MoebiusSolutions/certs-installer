@@ -1,0 +1,8 @@
+# JetBrains
+.idea/
+
+# Python
+__pycache__/
+
+# virtualenv
+venv/
