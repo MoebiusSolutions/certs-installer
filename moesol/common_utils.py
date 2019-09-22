@@ -1,17 +1,14 @@
 import re
 
-# Splits a file into sections, given a start/end line pattern.
-# Any content found between end/start patterns is discarded.
 def find_sections(content, start_pattern, end_pattern):
     """
     Splits a file into sections, given a start/end line pattern.
     Any content found between end/start patterns is discarded.
     Any un-terminated section is discarded.
 
-    :param content: The string to process
-    :param file out_file: The file to write to (effectively a copy of in_file)
-    :param str start_pattern: A regex expression to match the first line of the section
-    :param str end_pattern: A regex expression to match the last line of the section
+    :param str content: The string to process
+    :param re start_pattern: A compiled regex pattern to match the first line of a section
+    :param re end_pattern: A compiled regex pattern to match the last line of a section
     """
     inside_section = False
     last_line_of_section = False
@@ -30,3 +27,18 @@ def find_sections(content, start_pattern, end_pattern):
             section.append(line)
     return sections
 
+
+def simple_pattern_to_regex(simple_pattern):
+    """
+    Convers a "simple pattern" (where "*" represents a multi-char wildcard)
+    into a standard regex pattern.
+
+    :param str simple_pattern: The simple pattern to convert
+    """
+
+    # Split on simple wildcards
+    constant_segements = simple_pattern.split('*')
+    # Regex escape each segment
+    constant_segements = map(lambda segment:re.escape(segment), constant_segements)
+    # Join segments with regex wildcards
+    return re.compile('.*'.join(constant_segements))
