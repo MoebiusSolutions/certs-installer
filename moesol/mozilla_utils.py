@@ -2,6 +2,9 @@ import os
 from pathlib import Path
 from OpenSSL import crypto  # will be a dependency that was ALREADY installed into the local venv via pip3.
 import configparser
+import subprocess
+
+_subprocess_provider = subprocess
 
 def print_profiles(profiles):
     print('')
@@ -33,9 +36,9 @@ def import_ca_certs(profile_dir, cert_files):
         cert_common_name = cert.get_subject().CN
         print('CERT: '+cert_common_name)
         # NOTE: certutil is a mozilla tool
-        #subprocess.run(
-        #    ["certutil", "-A", "-d", "sql:"+str(profile_dir), "-t", "CT,CT,CT", "-i", cert_file, "-n", cert_common_name],
-        #    check=True)
+        _subprocess_provider.run(
+            ["certutil", "-A", "-d", "sql:"+str(profile_dir), "-t", "CT,CT,CT", "-i", str(cert_file), "-n", cert_common_name],
+            check=True)
     print("Importing CA Certs into Mozilla Profile...DONE.")
 
 def _read_mozilla_profiles(prog_home_dir, prog_name):
@@ -48,12 +51,18 @@ def _read_mozilla_profiles(prog_home_dir, prog_name):
             section = profiles_config[section]
             profiles[section['Path']] = section
     # Identify absolute paths
-    for profile in profiles:
-        if profiles[profile]['IsRelative'] == '1':
-            profiles[profile]['AbsoluteDir'] = str(prog_home_dir/'default')
+    for profile_name in profiles:
+        profile = profiles[profile_name]
+        if profile['IsRelative'] == '1':
+            profile['AbsoluteDir'] = str(prog_home_dir/profile['Path'])
         else:
-            profiles[profile]['AbsoluteDir'] = str(Path(profile['Path']))
+            profile['AbsoluteDir'] = str(Path(profile['Path']))
     # Identify program
-    for profile in profiles:
-        profiles[profile]['Program'] = prog_name
+    for profile_name in profiles:
+        profile = profiles[profile_name]
+        profile['Program'] = prog_name
     return profiles
+
+# Used for unit testing
+def _set_subprocess_provider(provider):
+    _subprocess_provider = provider
