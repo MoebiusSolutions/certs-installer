@@ -37,4 +37,11 @@ print('Initializing python3-venv...DONE.')
 # Launch main script inside the venv
 cmd_line = ['venv/bin/python3', 'install-certs-main.py']
 cmd_line.extend(sys.argv[1:])
-subprocess.run(cmd_line, check=True)
+try:
+    subprocess.run(cmd_line, check=True)
+except subprocess.CalledProcessError as e:
+    if e.returncode == 11:
+        # Indicates that the subprocess already printed the error.
+        exit(11)
+    else:
+        raise e

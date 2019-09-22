@@ -1,64 +1,116 @@
 #!venv/bin/python
 
+import sys
 from pathlib import Path
 import moesol.dod_cert_utils as dod_cert_utils
 import moesol.mozilla_utils as mozilla_utils
 
-def prompt_for_response(prompt, response_mapping, default_response):
-	while True:
-		response = str(input(prompt)).lower().strip()
-		if response == '':
-			return response_mapping[default_response]
-		if response in response_mapping:
-			return response_mapping[response]
+# The exit code used to indiate that this process
+# failed, but that this script printed details of the error.
+# This allows the caller to safely swallow and exit code
+# exception.
+HANDLED_EXCEPTION_EXIT = 11
 
-def read_config(mozilla_profiles):
-	prompt = (
-		'Install To:\n'
+def get_required_arg(args):
+	if len(args) < 1:
+		print_usage_and_exit()
+	return args.pop(0)
+
+def print_usage_and_exit():
+	usage = (
 		'\n'
-		'1. Both\n'
-		'2. Linux System Store\n'
-		'3. Firefox/Thunderbird\n'
+		f'{sys.argv[0]} - Utilities for Importing DoD and Other Certs\n'
 		'\n'
-		'Selection [1]? ')
-	target_selection = prompt_for_response(prompt, {'1':['system','mozilla'], '2':['system'], '3':['mozilla'], }, '1')
+		'--list-mozilla\n'
+		'\n'
+		'	Lists the available Firefox/Thunderbird profiles by ID.\n'
+		'\n'
+		'--download-install-dod-ca-certs\n'
+		'\n'
+		'	Downloads the latest DoD CA certs and installs them\n'
+		'	to the designated target. Requires a "--to-..." option.\n'
+		'\n'
+		'--install-ca-certs <dir-path> <file-pattern>\n'
+		'\n'
+		'	Installs CA certs in <dir-path> that match <file-pattern>\n'
+		'	to the designated target. Requires a "--to-..." option.\n'
+		'\n'
+		'	<file-pattern> may contain "*" to indicate a multi-char wildcard.\n'
+		'\n'
+		'--to-mozilla <profile-id>\n'
+		'\n'
+		'	Targets the specific Firefox/Thunderbird profile for installation\n'
+		'	of the selected certificates.\n'
+		'\n'
+		'--to-system\n'
+		'\n'
+		'	Targets the system (OS) trust store for installation\n'
+		'	of the selected certificates.\n'
+		'\n' )
+	print(usage, file=sys.stderr)
+	exit(HANDLED_EXCEPTION_EXIT)
 
-	prompt = ''
-	value_mapping = {}
-	i = 1
-	for profile in mozilla_profiles:
-		prompt += ( '%s. %s - %s (%s)\n' % (i, profile['Program'], profile['Name'], profile['Path']) )
-		value_mapping[str(i)] = profile
-		i += 1
-	prompt += '\n'
-	prompt += 'Selection [1]? '
-	mozilla_selection = None
-	if ('mozilla' in target_selection):
-		mozilla_selection = prompt_for_response(prompt, value_mapping, '1')
+def print_error_and_exit(message):
+	print('\nERROR: %s\n' % message, file=sys.stderr)
+	exit(HANDLED_EXCEPTION_EXIT)
 
-	return {
-		'target_selection': target_selection,
-		'mozilla_selection': mozilla_selection
+def parse_args(argv):
+	args = []
+	args.extend(argv)
+	config = {
+		'do_list_mozilla': False,
+		'do_install_dod_ca_certs': False,
+		'do_install_ca_certs': False,
+		'install_ca_certs': None,
+		'to_mozilla': None,
+		'to_system': False
 	}
+	# Parse args
+	while True:
+		if len(args) < 1:
+			break
+		arg = args.pop(0)
+		if '--list-mozilla' == arg:
+			config['do_list_mozilla'] = True
+		elif '--download-install-dod-ca-certs' == arg:
+			config['do_install_dod_ca_certs'] = True
+		elif '--install-ca-certs' == arg:
+			config['do_install_ca_certs'] = True
+			config['install_ca_certs'] = {
+				'dir': Path(get_required_arg(args)),
+				'file_pattern': moesol.common_utils.simple_pattern_to_regex(get_required_arg(args)) }
+		elif '--to-mozilla' == arg:
+			config['to_mozilla'] = True
+			config['mozilla_profile'] = get_required_arg(args)
+		elif '--to-system' == arg:
+			config['to_system'] = True
+	# Verify some primary action is specified 
+	if (not config['do_list_mozilla']) and \
+		(not config['do_install_dod_ca_certs']) and \
+		(not config['do_install_ca_certs']):
+		print_usage_and_exit()
+	# If installing CA certs, verify a target is specified 
+	if (config['do_install_dod_ca_certs'] or config['do_install_ca_certs']) and \
+		not (config['to_mozilla'] or config['to_system']):
+		print_usage_and_exit()
+	return config
 
-mozilla_profiles = []
-mozilla_profiles.extend(mozilla_utils.read_firefox_profiles())
-mozilla_profiles.extend(mozilla_utils.read_thunderbird_profiles())
+config = parse_args(sys.argv)
+mozilla_profiles = mozilla_utils.read_profiles()
 
-config = read_config(mozilla_profiles)
+ca_cert_files = []
+if config['do_list_mozilla']:
+	mozilla_utils.print_profiles(mozilla_profiles)
+if config['do_install_dod_ca_certs']:
+	dod_cert_utils.download_certs()
+	ca_cert_files.extend(dod_cert_utils.get_cert_files())
+if config['do_install_ca_certs']:
+	raise 'IMPLEMENT THIS'
+	files = os.listdir(config['install_ca_certs']['dir'])
+	ca_cert_files.extend(filter(lambda x: config['install_ca_certs']['file_pattern'].match(x)))
+if (config['do_install_dod_ca_certs'] or config['do_install_ca_certs']) and config['to_mozilla']:
+	if not config['mozilla_profile'] in mozilla_profiles:
+		print_error_and_exit('Unrecognized Firefox/Thudnerbird profile [%s]' % config['mozilla_profile'])
+	profile = mozilla_profiles[config['mozilla_profile']]
+	mozilla_utils.import_ca_certs(Path(profile['AbsoluteDir']), ca_cert_files)
 
-dod_cert_utils.download_certs()
-dod_cert_files = dod_cert_utils.get_cert_files()
-if 'mozilla' in config['target_selection']:
-	mozilla_utils.import_certs(Path(config['mozilla_selection']['AbsoluteDir']), dod_cert_files)
-
-#print(print_mozilla_profiles())
-#print(read_config())
-
-#def action_list_all_mozilla_profiles(args):
-#def action_load_dod_certs(args):
-#def read_mozilla_profiles(prog_home_path, prog_name):
-#def extract_dod_certs():
-#def import_dod_certs():
-#def download_dod_certs():
-#def verify_apt_package_installed(package_name):
