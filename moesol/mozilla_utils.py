@@ -7,7 +7,8 @@ def print_profiles(profiles):
     print('')
     print('%-12s %-26s %-30s' % ("Program", "Profile Name", "ID"))
     print('--------------------------------------------------------------------')
-    for profile in profiles:
+    for profile_name in profiles:
+        profile = profiles[profile_name]
         print('%-12s %-26s %-30s' % (profile["Program"], profile["Name"], profile["Path"]))
     print('')
 
