@@ -122,3 +122,6 @@ if (config['do_install_dod_ca_certs'] or config['do_install_ca_certs']) and conf
 	profile = mozilla_profiles[config['mozilla_profile']]
 	mozilla_utils.import_ca_certs(Path(profile['AbsoluteDir']), ca_cert_files)
 
+print('')
+print('[SUCCESS]')
+print('')
