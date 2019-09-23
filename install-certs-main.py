@@ -1,7 +1,9 @@
 #!venv/bin/python
 
 import sys
+import os
 from pathlib import Path
+import moesol.common_utils as common_utils
 import moesol.dod_cert_utils as dod_cert_utils
 import moesol.mozilla_utils as mozilla_utils
 
@@ -78,7 +80,7 @@ def parse_args(argv):
 			config['do_install_ca_certs'] = True
 			config['install_ca_certs'] = {
 				'dir': Path(get_required_arg(args)),
-				'file_pattern': moesol.common_utils.simple_pattern_to_regex(get_required_arg(args)) }
+				'file_pattern': common_utils.simple_pattern_to_regex(get_required_arg(args)) }
 		elif '--to-mozilla' == arg:
 			config['to_mozilla'] = True
 			config['mozilla_profile'] = get_required_arg(args)
@@ -105,9 +107,15 @@ if config['do_install_dod_ca_certs']:
 	dod_cert_utils.download_certs()
 	ca_cert_files.extend(dod_cert_utils.get_cert_files())
 if config['do_install_ca_certs']:
-	raise 'IMPLEMENT THIS'
-	files = os.listdir(config['install_ca_certs']['dir'])
-	ca_cert_files.extend(filter(lambda x: config['install_ca_certs']['file_pattern'].match(x)))
+	filenames = os.listdir(config['install_ca_certs']['dir'])
+	ca_cert_files.extend(
+		# Map filenames to full paths
+		map(
+			lambda filename: Path(config['install_ca_certs']['dir'])/filename,
+			# Filter filesname by regex match
+			filter(
+				lambda filename: config['install_ca_certs']['file_pattern'].match(filename),
+				filenames)))
 if (config['do_install_dod_ca_certs'] or config['do_install_ca_certs']) and config['to_mozilla']:
 	if not config['mozilla_profile'] in mozilla_profiles:
 		print_error_and_exit('Unrecognized Firefox/Thudnerbird profile [%s]' % config['mozilla_profile'])
