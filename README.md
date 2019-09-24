@@ -1,4 +1,4 @@
-Certifiate Installer
+Certificates Installer
 ================
 
 Overview
@@ -23,13 +23,28 @@ Compatibility
 Example Usage
 ----------------
 
-Get program usage:
-
-	./install-certs.py
-
 List Firefox/Thunderbird profiles:
 
 	./install-certs.py --list-mozilla
+
+	Program      Profile Name               ID
+	--------------------------------------------------------------------
+	Firefox      default                    uc5tmpul.default
+	Thunderbird  default                    0aauf7kx.default
+	Thunderbird  MyProfile                  9sk6jas1.MyProfile   
+
+Install DoD CAs to Firefox/Thunderbird profile and the OS system store:
+
+	./install-certs.py --download-install-dod-ca-certs \
+	  --to-system --to-mozilla 9sk6jas1.MyProfile
+
+
+Other Examples
+----------------
+
+Get program usage:
+
+	./install-certs.py
 
 Install DoD CAs to Firefox/Thunderbird profile:
 
@@ -43,7 +58,8 @@ Install DoD CAs to the Linux system store:
 
 	./install-certs.py --download-install-dod-ca-certs --to-system
 
-Install an arbitrary set of CA certs (that match `MyCA-*.crt`) to Linux system store:
+Install an arbitrary set of CA certs (in `~/Downloads`, that match `MyCA-*.crt`)
+to the Linux system store:
 
 	./install-certs.py --install-ca-certs ~/Downloads 'MyCA-*.crt' --to-system
 
