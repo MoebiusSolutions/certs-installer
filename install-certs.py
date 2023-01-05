@@ -4,6 +4,9 @@
 # This script wraps install-certs-main.sh by first loading a python virtual environment,
 # then launching install-certs-main.sh from that environment. This allows the packages
 # of this module to be isolated from system packages.
+#
+# This was defined in a python script (instead of a bash script),
+# because there was some hope that we could unify linux/windows commands.
 # ----------------
 
 import sys
