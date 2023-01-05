@@ -7,7 +7,7 @@ import re
 import subprocess
 import moesol.common_utils
 
-_CURRENT_CA_BUNDLE = 'certificates_pkcs7_v5-6_dod.zip'
+_CURRENT_CA_BUNDLE = 'certificates_pkcs7_DoD.zip'
 _CACHE_DIR = Path.home()/'.moesol/dod-cert-cache'
 # Example: .../certificates_pkcs7_v5-6_dod_processed/
 _PROCESSED_CERTS_DIR = _CACHE_DIR/(Path(_CURRENT_CA_BUNDLE).stem+'_processed')
@@ -24,13 +24,10 @@ def download_certs():
     temp_cert_bundle = '/tmp/DoD_certs/temp.cer'
     temp_cert_prefix = '/tmp/DoD_certs/temp-cert-'
 
-    if not zip_file.is_file():
-        print('Downloading DoD certs...')
-        print(f'[{url}]')
-        urllib.request.urlretrieve(url, zip_file)
-        print('Downloading DoD certs...DONE.')
-    else:
-        print('[SKIP] Downloading DoD certs.')
+    print('Downloading DoD certs...')
+    print(f'[{url}]')
+    urllib.request.urlretrieve(url, zip_file)
+    print('Downloading DoD certs...DONE.')
 
     print('Unzipping DoD certs...')
     if unzip_dir.exists():
