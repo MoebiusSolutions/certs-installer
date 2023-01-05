@@ -27,15 +27,13 @@ if not _is_package_installed('python3-venv'):
     subprocess.run(['sudo', 'apt', '-y', 'install', 'python3-venv'], check=True)
     print('Attempting to install python3-venv...DONE.')
 
-print('Initializing python3-venv...')
-# Creates a Virtual Environment containing Python3 and Pip3
-subprocess.run(['python3', '-m', 'venv', 'venv'], check=True)
 # Install dependencies into local venv
-subprocess.run(['venv/bin/pip', 'install', '-r', 'pip-requirements.txt'], check=True)
+print('Initializing python3-venv...')
+subprocess.run(['pipenv', 'install'], check=True)
 print('Initializing python3-venv...DONE.')
 
 # Launch main script inside the venv
-cmd_line = ['venv/bin/python3', 'install-certs-main.py']
+cmd_line = ['pipenv', 'run', 'python', 'install-certs-main.py']
 cmd_line.extend(sys.argv[1:])
 try:
     subprocess.run(cmd_line, check=True)
