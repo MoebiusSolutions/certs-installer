@@ -122,6 +122,35 @@ if (config['do_install_dod_ca_certs'] or config['do_install_ca_certs']) and conf
 	profile = mozilla_profiles[config['mozilla_profile']]
 	mozilla_utils.import_ca_certs(Path(profile['AbsoluteDir']), ca_cert_files)
 
+if (config['to_system']):
+	print('''
+ATTENTION: --to-system has not been implemented yet, but here are commands to do it manually...
+
+Identify the bundle name that you recently downloaded with --download-install-dod-ca-certs:
+
+    grep "_CURRENT_CA_BUNDLE =" moesol/dod_cert_utils.py
+
+Using that bundle name (sans ".zip"), you should have the extracted certs here:
+
+    ~/.moesol/dod-cert-cache/<bundle-name>/
+
+... for example:
+
+    ~/.moesol/dod-cert-cache/certificates_pkcs7_DoD_processed/
+
+You can then install the certs to the OS with:
+
+    # Ubuntu/Debian
+    sudo cp ~/.moesol/dod-cert-cache/certificates_pkcs7_DoD_processed/DoD.*.crt \\
+        /usr/local/share/ca-certificates/
+    sudo update-ca-certificates
+
+    # RedHat/CentOS
+    sudo cp ~/.moesol/dod-cert-cache/certificates_pkcs7_DoD_processed/DoD.*.crt \\
+        /etc/pki/ca-trust/source/anchors/
+    update-ca-trust extract
+''')
+
 print('')
 print('[SUCCESS]')
 print('')
