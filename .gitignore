@@ -7,7 +7,3 @@ __pycache__/
 # virtualenv
 venv/
 
-# Ignore pipenv files, except for a placeholder.txt, which ensures the dir is created
-!/.venv/
-/.venv/*
-!/.venv/placeholder.txt
