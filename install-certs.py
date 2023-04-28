@@ -4,6 +4,9 @@
 # This script wraps install-certs-main.sh by first loading a python virtual environment,
 # then launching install-certs-main.sh from that environment. This allows the packages
 # of this module to be isolated from system packages.
+#
+# This was defined in a python script (instead of a bash script),
+# because there was some hope that we could unify linux/windows commands.
 # ----------------
 
 import sys
@@ -31,11 +34,11 @@ print('Initializing python3-venv...')
 # Creates a Virtual Environment containing Python3 and Pip3
 subprocess.run(['python3', '-m', 'venv', 'venv'], check=True)
 # Install dependencies into local venv
-subprocess.run(['venv/bin/pip', 'install', '-r', 'pip-requirements.txt'], check=True)
+subprocess.run(['venv/bin/pip3', 'install', '-r', 'pip-requirements.txt'], check=True)
 print('Initializing python3-venv...DONE.')
 
 # Launch main script inside the venv
-cmd_line = ['venv/bin/python3', 'install-certs-main.py']
+cmd_line = ['venv/bin/python', 'install-certs-main.py']
 cmd_line.extend(sys.argv[1:])
 try:
     subprocess.run(cmd_line, check=True)
