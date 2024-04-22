@@ -23,20 +23,30 @@ Compatibility
 Example Usage
 ----------------
 
-List Firefox/Thunderbird profiles:
+**NOTE**: We've added the centralized files for Chrome/Chromium the `--to-mozilla` option.
+This is a bit of a temporary kluge. In the future we should replace this with a dedicated `--to-chrome` option.
+
+List Firefox/Thunderbird (and Chrome) profiles:
 
 	./install-certs.py --list-mozilla
 
-	Program      Profile Name               ID
+	Program      	Profile Name               			ID
 	--------------------------------------------------------------------
-	Firefox      default                    uc5tmpul.default
-	Thunderbird  default                    0aauf7kx.default
-	Thunderbird  MyProfile                  9sk6jas1.MyProfile   
+	Firefox      	default                    			uc5tmpul.default
+	Thunderbird  	default                    			0aauf7kx.default
+	Thunderbird  	MyProfile                  			9sk6jas1.MyProfile
+	Chrome          ~/.pki/nssdb                        .pki/nssdb
+	Chromium Snap   ~/snap/chromium/current/.pki/nssdb  snap/chromium/current/.pki/nssdb
 
 Install DoD CAs to Firefox/Thunderbird profile and the OS system store:
 
+	# To Thunderbird profile
 	./install-certs.py --download-install-dod-ca-certs \
 	  --to-system --to-mozilla 9sk6jas1.MyProfile
+
+	# To centralized Chrome file
+	./install-certs.py --download-install-dod-ca-certs \
+	  --to-system --to-mozilla .pki/nssdb
 
 
 Other Examples

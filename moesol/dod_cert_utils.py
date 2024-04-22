@@ -7,7 +7,7 @@ import re
 import subprocess
 import moesol.common_utils
 
-_CURRENT_CA_BUNDLE = 'certificates_pkcs7_DoD.zip'
+_CURRENT_CA_BUNDLE = 'unclass-certificates_pkcs7_DoD.zip'
 _CACHE_DIR = Path.home()/'.moesol/dod-cert-cache'
 # Example: .../certificates_pkcs7_v5-6_dod_processed/
 _PROCESSED_CERTS_DIR = _CACHE_DIR/(Path(_CURRENT_CA_BUNDLE).stem+'_processed')
@@ -40,14 +40,15 @@ def download_certs():
     cert_bundle_file = None
     for root, dirs, files in os.walk(unzip_dir):
         for c in files:
-            if c.endswith('DoD.der.p7b'):
+            # This filters to the global p7b, not the root-CA-specific ones
+            if c.endswith('dod_der.p7b'):
                 cert_bundle_file = Path(root)/c
                 break
 
     # TODO: Use import OpenSSL
 
     if not cert_bundle_file:
-        raise f'Failed to find *DoD.der.p7b in the DoD bundle under [{unzip_dir}]'
+        raise f'Failed to find *dod_der.p7b in the DoD bundle under [{unzip_dir}]'
 
     if _PROCESSED_CERTS_DIR.exists():
         shutil.rmtree(_PROCESSED_CERTS_DIR)

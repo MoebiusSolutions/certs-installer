@@ -8,17 +8,18 @@ _subprocess_provider = subprocess
 
 def print_profiles(profiles):
     print('')
-    print('%-12s %-26s %-30s' % ("Program", "Profile Name", "ID"))
-    print('--------------------------------------------------------------------')
+    print('%-16s %-40s %-30s' % ("Program", "Profile Name", "ID"))
+    print('--------------------------------------------------------------------------------------')
     for profile_name in profiles:
         profile = profiles[profile_name]
-        print('%-12s %-26s %-30s' % (profile["Program"], profile["Name"], profile["Path"]))
+        print('%-16s %-40s %-30s' % (profile["Program"], profile["Name"], profile["Path"]))
     print('')
 
 def read_profiles():
     profiles = {}
     profiles.update(read_firefox_profiles())
     profiles.update(read_thunderbird_profiles())
+    profiles.update(read_chrome_profiles())
     return profiles
 
 def read_firefox_profiles():
@@ -61,6 +62,29 @@ def _read_mozilla_profiles(prog_home_dir, prog_name):
     for profile_name in profiles:
         profile = profiles[profile_name]
         profile['Program'] = prog_name
+    return profiles
+
+# TODO: Add a top level --to-chrome option instead of hacking chrome into the mozilla profiles
+def read_chrome_profiles():
+    '''
+    Returns hard coded paths for Chrome/Chromium that mirrors
+    the structure returned for Mozilla profile dirs.
+    '''
+    profiles = {}
+    profile = {
+        'Path': '.pki/nssdb',
+        'AbsoluteDir': str(Path.home()/'.pki/nssdb'),
+        'Name': '~/.pki/nssdb',
+        'Program': 'Chrome'
+    }
+    profiles[profile['Path']] = profile
+    profile = {
+        'Path': 'snap/chromium/current/.pki/nssdb',
+        'AbsoluteDir': str(Path.home()/'snap/chromium/current/.pki/nssdb'),
+        'Name': '~/snap/chromium/current/.pki/nssdb',
+        'Program': 'Chromium Snap'
+    }
+    profiles[profile['Path']] = profile
     return profiles
 
 # Used for unit testing
