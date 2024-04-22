@@ -28,23 +28,23 @@ This is a bit of a temporary kluge. In the future we should replace this with a 
 
 List Firefox/Thunderbird (and Chrome) profiles:
 
-	./install-certs.py --list-mozilla
+    ./install-certs.py --list-mozilla
 
-	Program      	Profile Name               			ID
-	--------------------------------------------------------------------
-	Firefox      	default                    			uc5tmpul.default
-	Thunderbird  	default                    			0aauf7kx.default
-	Thunderbird  	MyProfile                  			9sk6jas1.MyProfile
-	Chrome          ~/.pki/nssdb                        .pki/nssdb
-	Chromium Snap   ~/snap/chromium/current/.pki/nssdb  snap/chromium/current/.pki/nssdb
+    Program         Profile Name                        ID
+    --------------------------------------------------------------------
+    Firefox         default                             uc5tmpul.default
+    Thunderbird     default                             0aauf7kx.default
+    Thunderbird     MyProfile                           9sk6jas1.MyProfile
+    Chrome          ~/.pki/nssdb                        .pki/nssdb
+    Chromium Snap   ~/snap/chromium/current/.pki/nssdb  snap/chromium/current/.pki/nssdb
 
 Download/Install DoD CAs to Thunderbird and Chrome:
 
-	# To Thunderbird profile
-	./install-certs.py --download-install-dod-ca-certs --to-mozilla 9sk6jas1.MyProfile
+    # To Thunderbird profile
+    ./install-certs.py --download-install-dod-ca-certs --to-mozilla 9sk6jas1.MyProfile
 
-	# To centralized Chrome file
-	./install-certs.py --download-install-dod-ca-certs --to-mozilla .pki/nssdb
+    # To centralized Chrome file
+    ./install-certs.py --download-install-dod-ca-certs --to-mozilla .pki/nssdb
 
 
 Other Examples
@@ -52,22 +52,22 @@ Other Examples
 
 Get program usage:
 
-	./install-certs.py
+    ./install-certs.py
 
 Install DoD CAs to Firefox/Thunderbird profile:
 
-	./install-certs.py --download-install-dod-ca-certs --to-mozilla 9sk6jas1.MyProfile
+    ./install-certs.py --download-install-dod-ca-certs --to-mozilla 9sk6jas1.MyProfile
 
 Install an arbitrary set of CA certs (that match `MyCA-*.crt`) to Firefox/Thunderbird profile:
 
-	./install-certs.py --install-ca-certs ~/Downloads 'MyCA-*.crt' --to-mozilla 9sk6jas1.MyProfile
+    ./install-certs.py --install-ca-certs ~/Downloads 'MyCA-*.crt' --to-mozilla 9sk6jas1.MyProfile
 
 Install DoD CAs to the Linux system store:
 
-	./install-certs.py --download-install-dod-ca-certs --to-system
+    ./install-certs.py --download-install-dod-ca-certs --to-system
 
 Install an arbitrary set of CA certs (in `~/Downloads`, that match `MyCA-*.crt`)
 to the Linux system store:
 
-	./install-certs.py --install-ca-certs ~/Downloads 'MyCA-*.crt' --to-system
+    ./install-certs.py --install-ca-certs ~/Downloads 'MyCA-*.crt' --to-system
 
