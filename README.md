@@ -38,7 +38,7 @@ List Firefox/Thunderbird (and Chrome) profiles:
 	Chrome          ~/.pki/nssdb                        .pki/nssdb
 	Chromium Snap   ~/snap/chromium/current/.pki/nssdb  snap/chromium/current/.pki/nssdb
 
-Install DoD CAs to Firefox/Thunderbird profile and the OS system store:
+Download/Install DoD CAs to Thunderbird and Chrome:
 
 	# To Thunderbird profile
 	./install-certs.py --download-install-dod-ca-certs --to-mozilla 9sk6jas1.MyProfile
