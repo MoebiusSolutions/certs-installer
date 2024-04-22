@@ -41,12 +41,10 @@ List Firefox/Thunderbird (and Chrome) profiles:
 Install DoD CAs to Firefox/Thunderbird profile and the OS system store:
 
 	# To Thunderbird profile
-	./install-certs.py --download-install-dod-ca-certs \
-	  --to-system --to-mozilla 9sk6jas1.MyProfile
+	./install-certs.py --download-install-dod-ca-certs --to-mozilla 9sk6jas1.MyProfile
 
 	# To centralized Chrome file
-	./install-certs.py --download-install-dod-ca-certs \
-	  --to-system --to-mozilla .pki/nssdb
+	./install-certs.py --download-install-dod-ca-certs --to-mozilla .pki/nssdb
 
 
 Other Examples
